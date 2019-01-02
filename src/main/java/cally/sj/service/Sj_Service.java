@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -29,15 +30,7 @@ public class Sj_Service {
 	@Inject
 	private Sj_Dao sj_dao;
 	
-	public void callyM_Service( ServletRequest request, HttpServletRequest req) {
-		Cally_Member loginUser = (Cally_Member) req.getSession().getAttribute("loginUser");		
-		String id  = loginUser.getMem_id();	
-		sj_dao.doP_in_t_enter(new Cally_Member(id), request);	
-			
-		//interceptor용
-		Sj_m_VO sjlogin = sj_dao.sjlogin(id);
-		req.getSession().setAttribute("sjlogin", sjlogin);
-	}
+	
 	public void hm_join(ServletRequest request) {	
 		int mem_num =  Integer.parseInt(request.getParameter("mem_num"));
 		String sex = request.getParameter("sex");
@@ -47,13 +40,29 @@ public class Sj_Service {
 	      sj_dao.hm_join(param,request);
 	}
 	
+	public void callyM_Service( ServletRequest request, HttpServletRequest req) {
+		Cally_Member loginUser = (Cally_Member) req.getSession().getAttribute("loginUser");		
+		String id  = loginUser.getMem_id();	
+		sj_dao.doP_in_t_enter(new Cally_Member(id), request);	
+			
+		//interceptor용
+		Sj_m_VO sjlogin = sj_dao.sjlogin(id);
+		req.getSession().setAttribute("sjlogin", sjlogin);
+	}
+	
+	
+	
+	
 
 	public void food_search(ServletRequest request, String desc_kor) {
 		Map<String, Object> param = new HashMap<>();
 		param.put("DESC_KOR", desc_kor);
 		sj_dao.food_search(request, param,desc_kor);
 		
-	}	
+	}
+
+	
+	
 	public void food_search(ServletRequest request) {		
 		String desc_kor = request.getParameter("desc_kor");
 		 if (Objects.isNull(desc_kor)) {
@@ -67,18 +76,16 @@ public class Sj_Service {
 	
 	
 	
-	
-	public void counter(HttpServletRequest request, String bno) {		
+	//새식단작성
+	public void counter(HttpServletRequest request, String bno) {				
 		Cally_Member loginUser = (Cally_Member) request.getSession().getAttribute("loginUser");	
 		int m_num = loginUser.getMem_num();	
 		String dayurl = bno.substring(bno.lastIndexOf("=")+1);
 
-		Map<String, Object> param = new HashMap<>();
-		param.put("m_num", m_num);
-		param.put("dayurl", dayurl);		
-		sj_dao.counter_post(request,param);//날짜 프로시저
-		sj_dao.counter(request, param);
-	
+		Map<String, Object> map = new HashMap<>();
+		map.put("m_num", m_num);
+		map.put("dayurl", dayurl);		
+		sj_dao.counter_post(request,map);//날짜 프로시저	
 	}
 
 	
